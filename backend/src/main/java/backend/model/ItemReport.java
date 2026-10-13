@@ -35,6 +35,15 @@ public class ItemReport {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        if (itemStatus == null) {
+            itemStatus = ItemStatus.OPEN;
+        }
 
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
 }
