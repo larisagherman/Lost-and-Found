@@ -36,4 +36,5 @@ public class ItemReportController {
     public List<ItemReportDtoResponse> getAllFoundItemReports() {
         return itemReportService.getAllFoundItemReports();
     }
+
 }
