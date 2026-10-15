@@ -1,6 +1,7 @@
 package backend.controller;
 
 import backend.dto.ItemReportDtoRequest;
+import backend.dto.ItemReportDtoResponse;
 import backend.model.ItemReport;
 import backend.service.ItemReportService;
 import lombok.AllArgsConstructor;
@@ -24,5 +25,15 @@ public class ItemReportController {
     @GetMapping
     public List<ItemReport> getAllItemReports() {
         return itemReportService.getAllItemReports();
+    }
+
+    @GetMapping("/lost")
+    public List<ItemReportDtoResponse> getAllLostItemReports() {
+        return itemReportService.getAllLostItemReports();
+    }
+
+    @GetMapping("/found")
+    public List<ItemReportDtoResponse> getAllFoundItemReports() {
+        return itemReportService.getAllFoundItemReports();
     }
 }
