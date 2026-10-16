@@ -18,10 +18,10 @@ public class MatchItem {
     private Long id;
     @ManyToOne
     @JoinColumn(name="lost_item_report_id",nullable = false)
-    private ItemReport lostItemReportId;
+    private ItemReport lostItemReport;
     @ManyToOne
     @JoinColumn(name="found_item_report_id",nullable = false)
-    private ItemReport foundItemReportId;
+    private ItemReport foundItemReport;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MatchStatus matchStatus;

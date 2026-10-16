@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface MatchItemMapper {
-    @Mapping(source = "lostItemReportId.id", target = "lostItemReportId")
-    @Mapping(source = "foundItemReportId.id", target = "foundItemReportId")
+    @Mapping(source = "lostItemReport.id", target = "lostItemReportId")
+    @Mapping(source = "foundItemReport.id", target = "foundItemReportId")
     MatchItemDtoResponse toMatchItemDtoResponse(MatchItem matchItem) ;
 }
