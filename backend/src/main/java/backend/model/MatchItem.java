@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.config.YamlProcessor;
 
 import java.time.LocalDateTime;
 
@@ -19,10 +18,10 @@ public class MatchItem {
     private Long id;
     @ManyToOne
     @JoinColumn(name="lost_item_report_id",nullable = false)
-    private ItemReport LostItemReportId;
+    private ItemReport lostItemReportId;
     @ManyToOne
     @JoinColumn(name="found_item_report_id",nullable = false)
-    private ItemReport FoundItemReportId;
+    private ItemReport foundItemReportId;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MatchStatus matchStatus;
