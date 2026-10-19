@@ -1,6 +1,6 @@
 package backend.model;
 
-public enum ItemType {
+public enum ItemReportType {
     LOST,
     FOUND
 }

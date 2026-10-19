@@ -1,7 +1,7 @@
 package backend.dto;
 
-import backend.model.ItemStatus;
-import backend.model.ItemType;
+import backend.model.ItemReportType;
+import backend.model.ItemReportStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,8 +11,12 @@ public class ItemReportDtoResponse {
     private Long id;
     private String itemName;
     private String itemDetails;
-    private ItemType itemType;
+    private String category;
+    private String colour;
+    private String brand;
     private String location;
-    private ItemStatus itemStatus;
+    private LocalDateTime incidentAt;
+    private ItemReportType itemReportType;
+    private ItemReportStatus itemReportStatus;
     private LocalDateTime createdAt;
 }

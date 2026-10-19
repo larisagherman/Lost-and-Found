@@ -1,8 +1,7 @@
 package backend.dto;
 
-import backend.model.ItemStatus;
-import backend.model.ItemType;
-import jakarta.persistence.*;
+import backend.model.ItemReportType;
+import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,6 +10,10 @@ import java.time.LocalDateTime;
 public class ItemReportDtoRequest {
     private String itemName;
     private String itemDetails;
-    private ItemType itemType;
+    private String category;
+    private String colour;
+    private String brand;
+    private LocalDateTime incidentAt;
+    private ItemReportType itemReportType;
     private String location;
 }

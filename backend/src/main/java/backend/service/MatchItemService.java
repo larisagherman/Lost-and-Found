@@ -4,7 +4,7 @@ import backend.dto.MatchItemDtoRequest;
 import backend.dto.MatchItemDtoResponse;
 import backend.mapper.MatchItemMapper;
 import backend.model.ItemReport;
-import backend.model.ItemType;
+import backend.model.ItemReportType;
 import backend.model.MatchItem;
 import backend.repository.ItemReportRepository;
 import backend.repository.MatchItemRepository;
@@ -24,10 +24,10 @@ public class MatchItemService {
         }
         ItemReport lostItemReport = itemReportRepository.findById(matchItemDtoRequest.getLostItemReportId()).orElseThrow(()-> new IllegalArgumentException("Lost item report not found."));
         ItemReport foundItemReport = itemReportRepository.findById(matchItemDtoRequest.getFoundItemReportId()).orElseThrow(()-> new IllegalArgumentException("Found item report not found."));
-        if(lostItemReport.getItemType().equals(ItemType.FOUND)){
+        if(lostItemReport.getItemReportType().equals(ItemReportType.FOUND)){
             throw new IllegalArgumentException("First item report must be of type LOST.");
         }
-        if(foundItemReport.getItemType().equals(ItemType.LOST)){
+        if(foundItemReport.getItemReportType().equals(ItemReportType.LOST)){
             throw new IllegalArgumentException("Second item report must be of type FOUND.");
         }
         if(matchItemRepository.existsMatchItemByLostItemReport_IdAndFoundItemReport_Id(matchItemDtoRequest.getLostItemReportId(), matchItemDtoRequest.getFoundItemReportId())){

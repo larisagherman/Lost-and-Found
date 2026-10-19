@@ -1,6 +1,6 @@
 package backend.model;
 
-public enum ItemStatus {
+public enum ItemReportStatus {
     OPEN,
     MATCHED,
     CLAIMED,

@@ -4,7 +4,7 @@ import backend.dto.ItemReportDtoRequest;
 import backend.dto.ItemReportDtoResponse;
 import backend.mapper.ItemReportMapper;
 import backend.model.ItemReport;
-import backend.model.ItemType;
+import backend.model.ItemReportType;
 import backend.repository.ItemReportRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class ItemReportService {
         ItemReport itemReport=new ItemReport();
         itemReport.setItemName(itemReportDtoRequest.getItemName());
         itemReport.setItemDetails(itemReportDtoRequest.getItemDetails());
-        itemReport.setItemType(itemReportDtoRequest.getItemType());
+        itemReport.setItemReportType(itemReportDtoRequest.getItemReportType());
         itemReport.setLocation(itemReportDtoRequest.getLocation());
         itemReportRepository.save(itemReport);
     }
@@ -31,14 +31,14 @@ public class ItemReportService {
         List<ItemReport> itemReports=itemReportRepository
                 .findAll()
                 .stream()
-                .filter(itemReport -> itemReport.getItemType().equals(ItemType.LOST)).toList();
+                .filter(itemReport -> itemReport.getItemReportType().equals(ItemReportType.LOST)).toList();
     return itemReportMapper.toItemReportDtoResponseList(itemReports);
     }
     public List<ItemReportDtoResponse> getAllFoundItemReports(){
         List<ItemReport> itemReports=itemReportRepository
                 .findAll()
                 .stream()
-                .filter(itemReport->itemReport.getItemType().equals(ItemType.FOUND))
+                .filter(itemReport->itemReport.getItemReportType().equals(ItemReportType.FOUND))
                 .toList();
         return itemReportMapper.toItemReportDtoResponseList(itemReports);
     }

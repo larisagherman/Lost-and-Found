@@ -19,26 +19,35 @@ public class ItemReport {
 
     @Column(nullable = false)
     private String itemName;
-
     @Column
     private String itemDetails;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ItemType itemType;
-
+    @Column
+    private String category;
+    @Column
+    private String colour;
+    @Column
+    private String brand;
     @Column(nullable = false)
     private String location;
+    @Column
+    private LocalDateTime incidentAt;
+
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ItemStatus itemStatus=ItemStatus.OPEN;
+    private ItemReportType itemReportType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ItemReportStatus itemReportStatus = ItemReportStatus.OPEN;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        if (itemStatus == null) {
-            itemStatus = ItemStatus.OPEN;
+        if (itemReportStatus == null) {
+            itemReportStatus = ItemReportStatus.OPEN;
         }
 
         if (createdAt == null) {
