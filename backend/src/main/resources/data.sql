@@ -1,5 +1,6 @@
+
 INSERT INTO institution (name, code, is_active)
 VALUES
-    ('The Polytechnic University of Timisoara
-', 'UPT', TRUE),
-    ('West University of Timișoara', 'UVT', TRUE);
+    ('The Polytechnic University of Timisoara', 'UPT', TRUE),
+    ('West University of Timișoara', 'UVT', TRUE)
+    ON CONFLICT (code) DO NOTHING;

@@ -1,0 +1,22 @@
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: lostfound-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lostfound_db
+      POSTGRES_USER: lostfound_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5332:5432"
+    volumes:
+      - lostfound_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lostfound_user -d lostfound_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  lostfound_data:
