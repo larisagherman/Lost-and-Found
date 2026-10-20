@@ -87,7 +87,10 @@ FROM (VALUES
     ('Student ID card', 'Name partly visible; card belongs to a UPT student', 'DOCUMENTS', NULL, NULL, 'UPT main entrance', TIMESTAMP '2026-10-17 09:00:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-17 09:20:00', 'lostfound.admin@upt.ro'),
     ('Green hoodie', 'Size M, white logo on the chest', 'CLOTHING', 'Green', 'Nike', 'UVT Sports Hall', TIMESTAMP '2026-10-17 18:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-17 19:00:00', 'vlad.dumitrescu@student.uvt.ro'),
     ('Red water bottle', 'Metal bottle with a dent near the bottom', 'PERSONAL belongings', 'Red', 'Hydro Flask', 'UVT Library reading room', TIMESTAMP '2026-10-18 11:15:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-18 11:45:00', 'elena.stan@student.uvt.ro'),
-    ('Calculator', 'Scientific calculator with initials written on the back', 'STUDY MATERIALS', 'Black', 'Casio', 'UPT Faculty of Civil Engineering, room 105', TIMESTAMP '2026-10-18 14:40:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-18 15:10:00', 'ana.popescu@student.upt.ro')
+    ('Calculator', 'Scientific calculator with initials written on the back', 'STUDY MATERIALS', 'Black', 'Casio', 'UPT Faculty of Civil Engineering, room 105', TIMESTAMP '2026-10-18 14:40:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-18 15:10:00', 'ana.popescu@student.upt.ro'),
+    ('Keyring with three keys', 'Three silver keys on a red fabric keyring', 'PERSONAL belongings', 'Silver', NULL, 'UPT Faculty of Automation and Computers', TIMESTAMP '2026-10-15 08:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-15 10:00:00', 'ana.popescu@student.upt.ro'),
+    ('Wireless earbuds case', 'White Samsung earbuds case with a scratch on the front', 'ELECTRONICS', 'White', 'Samsung', 'UVT cafeteria', TIMESTAMP '2026-10-16 12:50:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-16 14:10:00', 'vlad.dumitrescu@student.uvt.ro'),
+    ('Metal water bottle', 'Red Hydro Flask bottle with a dent near the bottom', 'PERSONAL belongings', 'Red', 'Hydro Flask', 'UVT Library reading room', TIMESTAMP '2026-10-18 10:45:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-18 11:50:00', 'elena.stan@student.uvt.ro')
 ) AS seed(
     item_name,
     item_details,
@@ -109,4 +112,35 @@ WHERE NOT EXISTS (
       AND existing.location = seed.location
       AND existing.incident_at = seed.incident_at
       AND existing.item_report_type = seed.item_report_type
+);
+
+-- Suggested matches for three of the found reports. The ID card intentionally
+-- remains unmatched because there is no corresponding lost report in the seed.
+INSERT INTO match_item (
+    lost_item_report_id,
+    found_item_report_id,
+    match_status,
+    created_at
+)
+SELECT lost.id,
+       found.id,
+       'SUGGESTED',
+       TIMESTAMP '2026-10-20 09:00:00'
+FROM (
+    VALUES
+        ('Keyring with three keys', 'Silver keys'),
+        ('Wireless earbuds case', 'Wireless earbuds'),
+        ('Metal water bottle', 'Red water bottle')
+) AS pairs(lost_item_name, found_item_name)
+JOIN item_report lost
+    ON lost.item_name = pairs.lost_item_name
+   AND lost.item_report_type = 'LOST'
+JOIN item_report found
+    ON found.item_name = pairs.found_item_name
+   AND found.item_report_type = 'FOUND'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM match_item existing
+    WHERE existing.lost_item_report_id = lost.id
+      AND existing.found_item_report_id = found.id
 );

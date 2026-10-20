@@ -5,6 +5,7 @@ import backend.dto.ItemReportDtoResponse;
 import backend.mapper.ItemReportMapper;
 import backend.model.ItemReport;
 import backend.model.ItemReportType;
+import backend.model.Users;
 import backend.repository.ItemReportRepository;
 import backend.repository.UsersRepository;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class ItemReportService {
         itemReport.setItemDetails(itemReportDtoRequest.getItemDetails());
         itemReport.setItemReportType(itemReportDtoRequest.getItemReportType());
         itemReport.setLocation(itemReportDtoRequest.getLocation());
+        itemReport.setIncidentAt(itemReportDtoRequest.getIncidentAt());
         itemReport.setItemDetails(itemReportDtoRequest.getItemDetails());
         itemReport.setCategory(itemReportDtoRequest.getCategory());
         itemReport.setColour(itemReportDtoRequest.getColour());
