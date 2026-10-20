@@ -1,13 +1,13 @@
 package backend.dto;
 
 import backend.model.ItemReportType;
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 public class ItemReportDtoRequest {
+    private Long reporterId;
     private String itemName;
     private String itemDetails;
     private String category;
