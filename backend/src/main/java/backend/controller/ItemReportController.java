@@ -5,11 +5,7 @@ import backend.dto.ItemReportDtoResponse;
 import backend.model.ItemReport;
 import backend.service.ItemReportService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,20 +18,22 @@ public class ItemReportController {
     public void createItemReport(@RequestBody ItemReportDtoRequest itemReportDtoRequest) {
         itemReportService.createItemReport(itemReportDtoRequest);
     }
-
+    //TODO: remove this request param and get the institutionId from the logged in user
     @GetMapping
-    public List<ItemReportDtoResponse> getAllItemReports() {
-        return itemReportService.getAllItemReports();
-    }
+    public List<ItemReportDtoResponse> getAllItemReports(
+            @RequestParam Long institutionId) {
 
+        return itemReportService.getAllItemReports(institutionId);
+    }
+    //TODO: remove this request param and get the institutionId from the logged in user
     @GetMapping("/lost")
-    public List<ItemReportDtoResponse> getAllLostItemReports() {
-        return itemReportService.getAllLostItemReports();
+    public List<ItemReportDtoResponse> getAllLostItemReports(@RequestParam Long institutionId) {
+        return itemReportService.getAllLostItemReports(institutionId);
     }
-
+    //TODO: remove this request param and get the institutionId from the logged in user
     @GetMapping("/found")
-    public List<ItemReportDtoResponse> getAllFoundItemReports() {
-        return itemReportService.getAllFoundItemReports();
+    public List<ItemReportDtoResponse> getAllFoundItemReports(@RequestParam Long institutionId) {
+        return itemReportService.getAllFoundItemReports(institutionId);
     }
 
 }

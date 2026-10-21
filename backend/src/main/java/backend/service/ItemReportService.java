@@ -36,22 +36,32 @@ public class ItemReportService {
         itemReport.setIncidentAt(itemReportDtoRequest.getIncidentAt());
         itemReportRepository.save(itemReport);
     }
-    public List<ItemReportDtoResponse> getAllItemReports() {
-        return itemReportMapper.toItemReportDtoResponseList(itemReportRepository.findAll());
+    public List<ItemReportDtoResponse> getAllItemReports(
+            Long institutionId) {
+
+        List<ItemReport> itemReports =
+                itemReportRepository
+                        .findByReporterInstitutionId(institutionId);
+
+        return itemReportMapper
+                .toItemReportDtoResponseList(itemReports);
     }
-    public List<ItemReportDtoResponse> getAllLostItemReports() {
-        List<ItemReport> itemReports=itemReportRepository
-                .findAll()
-                .stream()
-                .filter(itemReport -> itemReport.getItemReportType().equals(ItemReportType.LOST)).toList();
-    return itemReportMapper.toItemReportDtoResponseList(itemReports);
+    public List<ItemReportDtoResponse> getAllLostItemReports(Long institutionId) {
+        List<ItemReport> itemReports =
+                itemReportRepository.findByReporterInstitutionIdAndItemReportType(
+                        institutionId,
+                        ItemReportType.LOST
+                );
+
+        return itemReportMapper.toItemReportDtoResponseList(itemReports);
     }
-    public List<ItemReportDtoResponse> getAllFoundItemReports(){
-        List<ItemReport> itemReports=itemReportRepository
-                .findAll()
-                .stream()
-                .filter(itemReport->itemReport.getItemReportType().equals(ItemReportType.FOUND))
-                .toList();
+    public List<ItemReportDtoResponse> getAllFoundItemReports(Long institutionId) {
+        List<ItemReport> itemReports =
+                itemReportRepository.findByReporterInstitutionIdAndItemReportType(
+                        institutionId,
+                        ItemReportType.FOUND
+                );
+
         return itemReportMapper.toItemReportDtoResponseList(itemReports);
     }
 }
