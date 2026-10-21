@@ -36,8 +36,8 @@ public class ItemReportService {
         itemReport.setIncidentAt(itemReportDtoRequest.getIncidentAt());
         itemReportRepository.save(itemReport);
     }
-    public List<ItemReport> getAllItemReports() {
-        return itemReportRepository.findAll();
+    public List<ItemReportDtoResponse> getAllItemReports() {
+        return itemReportMapper.toItemReportDtoResponseList(itemReportRepository.findAll());
     }
     public List<ItemReportDtoResponse> getAllLostItemReports() {
         List<ItemReport> itemReports=itemReportRepository

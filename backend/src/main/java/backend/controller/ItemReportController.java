@@ -24,7 +24,7 @@ public class ItemReportController {
     }
 
     @GetMapping
-    public List<ItemReport> getAllItemReports() {
+    public List<ItemReportDtoResponse> getAllItemReports() {
         return itemReportService.getAllItemReports();
     }
 
