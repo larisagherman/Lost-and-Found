@@ -32,6 +32,9 @@ public class ItemReport {
     @Column
     private LocalDateTime incidentAt;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "reporter_id", nullable = false)
+    private Users reporter;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

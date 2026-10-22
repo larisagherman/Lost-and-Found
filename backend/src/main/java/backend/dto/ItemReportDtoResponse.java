@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class ItemReportDtoResponse {
     private Long id;
+    private Long reporterId;
     private String itemName;
     private String itemDetails;
     private String category;
