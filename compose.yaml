@@ -18,5 +18,20 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lostfound_db
+      SPRING_DATASOURCE_USERNAME: lostfound_user
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8080:8080"
+
 volumes:
   lostfound_data:
