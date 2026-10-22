@@ -1,0 +1,37 @@
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: lostfound-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lostfound_db
+      POSTGRES_USER: lostfound_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5332:5432"
+    volumes:
+      - lostfound_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lostfound_user -d lostfound_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lostfound_db
+      SPRING_DATASOURCE_USERNAME: lostfound_user
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8080:8080"
+
+volumes:
+  lostfound_data:
