@@ -2,9 +2,10 @@ package backend.controller;
 
 import backend.dto.ItemReportDtoRequest;
 import backend.dto.ItemReportDtoResponse;
-import backend.model.ItemReport;
+import backend.security.AppUserPrincipal;
 import backend.service.ItemReportService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,25 +16,23 @@ import java.util.List;
 public class ItemReportController {
     private final ItemReportService itemReportService;
     @PostMapping
-    public void createItemReport(@RequestBody ItemReportDtoRequest itemReportDtoRequest) {
-        itemReportService.createItemReport(itemReportDtoRequest);
+    public void createItemReport(
+            @RequestBody ItemReportDtoRequest itemReportDtoRequest,
+            @AuthenticationPrincipal AppUserPrincipal principal
+    ) {
+        itemReportService.createItemReport(itemReportDtoRequest, principal.getUserId());
     }
-    //TODO: remove this request param and get the institutionId from the logged in user
     @GetMapping
-    public List<ItemReportDtoResponse> getAllItemReports(
-            @RequestParam Long institutionId) {
-
-        return itemReportService.getAllItemReports(institutionId);
+    public List<ItemReportDtoResponse> getAllItemReports(@AuthenticationPrincipal AppUserPrincipal principal) {
+        return itemReportService.getAllItemReports(principal.getInstitutionId());
     }
-    //TODO: remove this request param and get the institutionId from the logged in user
     @GetMapping("/lost")
-    public List<ItemReportDtoResponse> getAllLostItemReports(@RequestParam Long institutionId) {
-        return itemReportService.getAllLostItemReports(institutionId);
+    public List<ItemReportDtoResponse> getAllLostItemReports(@AuthenticationPrincipal AppUserPrincipal principal) {
+        return itemReportService.getAllLostItemReports(principal.getInstitutionId());
     }
-    //TODO: remove this request param and get the institutionId from the logged in user
     @GetMapping("/found")
-    public List<ItemReportDtoResponse> getAllFoundItemReports(@RequestParam Long institutionId) {
-        return itemReportService.getAllFoundItemReports(institutionId);
+    public List<ItemReportDtoResponse> getAllFoundItemReports(@AuthenticationPrincipal AppUserPrincipal principal) {
+        return itemReportService.getAllFoundItemReports(principal.getInstitutionId());
     }
 
 }

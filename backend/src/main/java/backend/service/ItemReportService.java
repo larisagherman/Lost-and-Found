@@ -19,8 +19,8 @@ public class ItemReportService {
     private final ItemReportRepository itemReportRepository;
     private final UsersRepository usersRepository;
     private final ItemReportMapper itemReportMapper;
-    public void createItemReport(ItemReportDtoRequest itemReportDtoRequest) {
-        Users reporter = usersRepository.findById(itemReportDtoRequest.getReporterId())
+    public void createItemReport(ItemReportDtoRequest itemReportDtoRequest, Long reporterId) {
+        Users reporter = usersRepository.findById(reporterId)
                 .orElseThrow(() -> new IllegalArgumentException("Reporter not found."));
         ItemReport itemReport=new ItemReport();
         itemReport.setReporter(reporter);

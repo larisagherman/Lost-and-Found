@@ -1,7 +1,7 @@
 package backend.model;
 
 public enum ItemReportStatus {
-    OPEN,//STILL LOKING FOR A MATCH
+    OPEN,//STILL LOOKING FOR A MATCH
     RESOLVED,//THE ITEM HAS BEEN CLOSED TO THE OWNER
     CLOSED//THE REPORT IS NO LONGER ACTIVE
 }
