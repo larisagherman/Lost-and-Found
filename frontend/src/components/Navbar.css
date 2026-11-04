@@ -1,10 +1,11 @@
 
+/* Navbar - Desktop */
+
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-
   padding: 20px 6%;
   background-color: #ffffff;
   border-bottom: 1px solid #e8edf4;
@@ -14,6 +15,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 
   font-size: 23px;
   font-weight: 700;
@@ -27,6 +29,7 @@
 
   width: 38px;
   height: 38px;
+  flex-shrink: 0;
   border-radius: 12px;
 
   background-color: #e8f0fb;
@@ -50,16 +53,39 @@
   color: #234575;
 }
 
+/* Authentication */
+
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  min-width: 0;
+}
+
+.user-name {
+  color: #182d4b;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 .login-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 11px 22px;
   border: none;
   border-radius: 9px;
 
   background-color: #234575;
-  color: white;
+  color: #ffffff;
 
   font-size: 14px;
   font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -67,21 +93,87 @@
   background-color: #182d4b;
 }
 
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.navbar-auth [role="alert"] {
+  color: #b91c1c;
+  font-size: 12px;
+}
+
+/* Navbar - Mobile */
+
 @media (max-width: 600px) {
   .navbar {
-    flex-wrap: wrap;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px 10px;
     padding: 16px 5%;
   }
 
   .navbar-brand {
-    font-size: 19px;
+    grid-column: 1;
+    grid-row: 1;
+    gap: 7px;
+    font-size: 18px;
+  }
+
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .navbar-auth {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 7px;
+  }
+
+  .user-name {
+    max-width: 78px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+  }
+
+  .login-button {
+    padding: 10px 12px;
+    font-size: 12px;
   }
 
   .navbar-links {
-    order: 3;
-    width: 100%;
+    grid-column: 1 / -1;
+    grid-row: 2;
     justify-content: center;
-    gap: 20px;
+    gap: 24px;
+  }
+
+  .navbar-links a {
+    font-size: 13px;
+  }
+
+  .navbar-auth [role="alert"] {
+    position: absolute;
+    top: 100%;
+    right: 5%;
+  }
+}
+
+/* Very small screens */
+
+@media (max-width: 360px) {
+  .navbar-brand {
+    font-size: 16px;
+  }
+
+  .user-name {
+    max-width: 55px;
+  }
+
+  .login-button {
+    padding: 9px 10px;
   }
 }

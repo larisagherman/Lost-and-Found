@@ -1,40 +1,59 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ItemCard from '../components/ItemCard'
+import { getAllItems } from '../services/itemService'
 
-// Temporary data used until backend API integration
-const testItems = [
-  {
-    id: 1,
-    itemName: 'Silver Keys',
-    itemDetails: 'Three keys on a red fabric keyring.',
-    category: 'PERSONAL belongings',
-    location: 'UPT Faculty of Automation and Computers',
-    itemReportType: 'FOUND',
-    incidentAt: '2026-10-16T08:45:00'
-  },
-  {
-    id: 2,
-    itemName: 'Black Headphones',
-    itemDetails: 'Black wireless headphones lost near the library.',
-    category: 'Electronics',
-    location: 'University Library',
-    itemReportType: 'LOST',
-    incidentAt: '2026-10-20T12:30:00'
-  }
-]
-
-function BrowseItems() {
-  // Read and update URL query parameters
+function BrowseItems({ setUser }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedType = searchParams.get('type')
 
-  // Store the text entered in the search bar
+  // Items loaded from the backend
+  const [items, setItems] = useState([])
+
+  // Search text
   const [searchTerm, setSearchTerm] = useState('')
 
-  // Filter items by report type and search text
-  const filteredItems = testItems.filter((item) => {
+  // Loading and error states
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  // Load items when the page opens
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadItems() {
+      try {
+        const data = await getAllItems()
+
+        if (!cancelled) {
+          setItems(data)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          if (error.message === 'SESSION_EXPIRED') {
+            setUser(null)
+          } else {
+            console.error('Failed to load items:', error)
+            setError('Failed to load items. Please try again.')
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadItems()
+
+    return () => {
+      cancelled = true
+    }
+  }, [setUser])
+
+  // Filter items by type and search text
+  const filteredItems = items.filter((item) => {
     const matchesType =
       !selectedType ||
       item.itemReportType === selectedType
@@ -46,12 +65,14 @@ function BrowseItems() {
       (item.itemDetails ?? '').toLowerCase().includes(search) ||
       (item.location ?? '').toLowerCase().includes(search) ||
       (item.category ?? '').toLowerCase().includes(search) ||
-      (item.itemReportType ?? '').toLowerCase().includes(search)
+      (item.itemReportType ?? '').toLowerCase().includes(search) ||
+      (item.brand ?? '').toLowerCase().includes(search) ||
+      (item.colour ?? '').toLowerCase().includes(search)
 
     return matchesType && matchesSearch
   })
 
-  // Update the selected filter in the URL
+  // Update the URL filter
   function handleFilterChange(type) {
     if (type === 'ALL') {
       setSearchParams({})
@@ -109,8 +130,17 @@ function BrowseItems() {
           />
         </div>
 
-        {/* Item cards or empty state */}
-        {filteredItems.length > 0 ? (
+        {/* Loading, error or item cards */}
+        {loading ? (
+          <div className="no-items">
+            <p>Loading items...</p>
+          </div>
+        ) : error ? (
+          <div className="no-items">
+            <h2>Something went wrong</h2>
+            <p>{error}</p>
+          </div>
+        ) : filteredItems.length > 0 ? (
           <div className="items-grid">
             {filteredItems.map((item) => (
               <ItemCard
