@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import ItemCard from '../components/ItemCard'
 import { getAllItems } from '../services/itemService'
 
@@ -85,11 +85,20 @@ function BrowseItems({ setUser }) {
     <main className="browse-page">
       <div className="browse-container">
 
-        <h1>Browse Items</h1>
 
-        <p>
-          Discover lost and found items from your university.
-        </p>
+        <div className="browse-header">
+          <div>
+            <h1>Browse Items</h1>
+            <p>
+              Discover lost and found items from your university.
+            </p>
+          </div>
+
+          <Link to="/items/new" className="report-item-button">
+            + Report an Item
+          </Link>
+        </div>
+
 
         {/* Filter buttons */}
         <div className="filter-buttons">
