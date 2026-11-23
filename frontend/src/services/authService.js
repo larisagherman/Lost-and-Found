@@ -1,5 +1,5 @@
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "http://localhost:8081";
 
 export async function getCsrfToken() {
   const response = await fetch(`${API_BASE_URL}/auth/csrf`, {

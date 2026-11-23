@@ -2,9 +2,22 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createItemReport } from '../services/itemService'
+import './CreateItem.css'
 
 function CreateItem() {
     const navigate = useNavigate()
+
+    function getCurrentLocalDateTime() {
+        const now = new Date()
+
+        const year = now.getFullYear()
+        const month = String(now.getMonth() + 1).padStart(2, '0')
+        const day = String(now.getDate()).padStart(2, '0')
+        const hours = String(now.getHours()).padStart(2, '0')
+        const minutes = String(now.getMinutes()).padStart(2, '0')
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`
+    }
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
@@ -41,9 +54,7 @@ function CreateItem() {
                     : null
             }
 
-            const createdItem = await createItemReport(itemData)
-
-            console.log('Created item:', createdItem)
+            await createItemReport(itemData)
 
             navigate('/items')
         } catch (error) {
@@ -89,6 +100,7 @@ function CreateItem() {
                 <input
                     id="itemName"
                     name="itemName"
+                    placeholder="e.g. Blue Backpack"
                     value={formData.itemName}
                     onChange={handleChange}
                     required
@@ -98,22 +110,34 @@ function CreateItem() {
                 <textarea
                     id="itemDetails"
                     name="itemDetails"
+                    placeholder="Describe the item, including any identifying details..."
                     value={formData.itemDetails}
                     onChange={handleChange}
+                    required
                 />
 
                 <label htmlFor="category">Category</label>
-                <input
+                <select
                     id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                />
+                    required
+                >
+                    <option value="">Select a category</option>
+                    <option value="ELECTRONICS">Electronics</option>
+                    <option value="DOCUMENTS">Documents</option>
+                    <option value="PERSONAL BELONGINGS">Personal Belongings</option>
+                    <option value="STUDY MATERIALS">Study Materials</option>
+                    <option value="CLOTHING">Clothing & Accessories</option>
+                    <option value="OTHER">Other</option>
+                </select>
 
                 <label htmlFor="colour">Colour</label>
                 <input
                     id="colour"
                     name="colour"
+                    placeholder="e.g. Blue"
                     value={formData.colour}
                     onChange={handleChange}
                 />
@@ -122,6 +146,7 @@ function CreateItem() {
                 <input
                     id="brand"
                     name="brand"
+                    placeholder="e.g. Nike, Apple, Samsung"
                     value={formData.brand}
                     onChange={handleChange}
                 />
@@ -133,16 +158,20 @@ function CreateItem() {
                     id="incidentAt"
                     name="incidentAt"
                     type="datetime-local"
+                    max={getCurrentLocalDateTime()}
                     value={formData.incidentAt}
                     onChange={handleChange}
+                    required
                 />
 
                 <label htmlFor="location">Location</label>
                 <input
                     id="location"
                     name="location"
+                    placeholder="e.g. UPT Library, first floor"
                     value={formData.location}
                     onChange={handleChange}
+                    required
                 />
 
                 <button type="submit" disabled={loading}>

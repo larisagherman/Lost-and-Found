@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = 'http://localhost:8081'
 
 export async function getAllItems() {
     const response = await fetch(`${API_BASE_URL}/item-reports`, {
@@ -66,5 +66,5 @@ export async function createItemReport(itemData) {
         throw new Error('Failed to create item report')
     }
 
-    return await response.json()
+    return await response.text()
 }
