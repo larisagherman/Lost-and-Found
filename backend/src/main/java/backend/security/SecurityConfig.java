@@ -1,3 +1,4 @@
+
 package backend.security;
 
 import org.springframework.context.annotation.Bean;
@@ -17,8 +18,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
 @Configuration
 public class SecurityConfig {
+
     @Bean
     SecurityContextRepository securityContextRepository() {
         return new HttpSessionSecurityContextRepository();
@@ -60,11 +68,14 @@ public class SecurityConfig {
             SecurityContextRepository securityContextRepository,
             CsrfTokenRepository csrfTokenRepository
     ) throws Exception {
-        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
+
+        CsrfTokenRequestAttributeHandler csrfRequestHandler =
+                new CsrfTokenRequestAttributeHandler();
 
         http
                 .cors(Customizer.withDefaults())
-                .securityContext(context -> context.securityContextRepository(securityContextRepository))
+                .securityContext(context ->
+                        context.securityContextRepository(securityContextRepository))
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository)
                         .csrfTokenRequestHandler(csrfRequestHandler))

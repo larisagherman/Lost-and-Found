@@ -1,0 +1,107 @@
+
+.create-item-page {
+    min-height: calc(100vh - 80px);
+    padding: 48px 20px 80px;
+    background-color: #f3f6fc;
+}
+
+.create-item-page h1 {
+    max-width: 720px;
+    margin: 0 auto 12px;
+    color: #182d50;
+    font-size: 32px;
+}
+
+.create-item-page > p {
+    max-width: 720px;
+    margin: 0 auto 32px;
+    color: #637695;
+    line-height: 1.6;
+}
+
+.create-item-page form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px;
+    background-color: #ffffff;
+    border: 1px solid #e1e8f3;
+    border-radius: 16px;
+    box-sizing: border-box;
+}
+
+.create-item-page label {
+    display: block;
+    color: #233e65;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.create-item-page input,
+.create-item-page select,
+.create-item-page textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid #d5dfec;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #182d50;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.create-item-page textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.create-item-page input:focus,
+.create-item-page select:focus,
+.create-item-page textarea:focus {
+    outline: 2px solid #244777;
+    outline-offset: 1px;
+}
+
+.create-item-page button[type="submit"] {
+    margin-top: 16px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #244777;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.create-item-page button[type="submit"]:hover {
+    background-color: #18365f;
+}
+
+.create-item-page button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.create-item-page .create-item-error {
+    max-width: 720px;
+    margin: 16px auto;
+    color: #b42318;
+}
+
+@media (max-width: 600px) {
+    .create-item-page {
+        padding: 28px 16px 48px;
+    }
+
+    .create-item-page h1 {
+        font-size: 26px;
+    }
+
+    .create-item-page form {
+        padding: 20px;
+    }
+}
