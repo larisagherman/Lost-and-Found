@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class ItemReportDtoRequest {
     private String itemName;
     private String itemDetails;
+    private String privateVerificationDetails;
     private String category;
     private String colour;
     private String brand;
