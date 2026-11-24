@@ -1,0 +1,12 @@
+package backend.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class EmailLoginRequest {
+    @NotBlank
+    @Email
+    private String email;
+}
