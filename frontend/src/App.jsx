@@ -9,6 +9,7 @@ import ItemDetails from './pages/ItemDetails'
 import Login from './pages/Login'
 import VerifyLogin from './pages/VerifyLogin'
 import CreateItem from './pages/CreateItem'
+import MyListings from './pages/MyListings'
 
 import { getCurrentUser } from './services/authService'
 
@@ -127,6 +128,27 @@ function App() {
               <Navigate to="/" replace />
             ) : (
               <VerifyLogin setUser={setUser} />
+            )
+          }
+        />
+        <Route
+          path="/my-listings"
+          element={
+            authLoading ? (
+              <main className="browse-page">
+                <p>Checking authentication...</p>
+              </main>
+            ) : user ? (
+              <MyListings
+                user={user}
+                setUser={setUser}
+              />
+            ) : (
+              <Navigate
+                to="/login"
+                state={{ from: location.pathname + location.search }}
+                replace
+              />
             )
           }
         />

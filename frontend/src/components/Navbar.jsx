@@ -36,6 +36,9 @@ function Navbar({ user, setUser, authLoading }) {
       <div className="navbar-links">
         <Link to="/">Home</Link>
         <Link to="/items">Browse Items</Link>
+        {user && (
+          <Link to="/my-listings">My Listings</Link>
+        )}
       </div>
 
       <div className="navbar-auth">
