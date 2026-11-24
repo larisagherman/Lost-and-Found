@@ -3,6 +3,7 @@ package backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -11,6 +12,11 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -30,7 +36,6 @@ public class SecurityConfig {
     CsrfTokenRepository csrfTokenRepository() {
         return new HttpSessionCsrfTokenRepository();
     }
-
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -43,7 +48,11 @@ public class SecurityConfig {
                 List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         );
 
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(
+                List.of("Content-Type", "X-CSRF-TOKEN", "Accept")
+        );
+
+        // Required for browser session cookies such as JSESSIONID.
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
@@ -53,7 +62,6 @@ public class SecurityConfig {
 
         return source;
     }
-
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
@@ -65,7 +73,7 @@ public class SecurityConfig {
                 new CsrfTokenRequestAttributeHandler();
 
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(Customizer.withDefaults())
                 .securityContext(context ->
                         context.securityContextRepository(securityContextRepository))
                 .csrf(csrf -> csrf
