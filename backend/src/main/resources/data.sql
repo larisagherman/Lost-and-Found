@@ -59,6 +59,7 @@ INSERT INTO item_report (
     reporter_id,
     item_name,
     item_details,
+    private_verification_details,
     category,
     colour,
     brand,
@@ -71,6 +72,7 @@ INSERT INTO item_report (
 SELECT reporter.id,
        seed.item_name,
        seed.item_details,
+       seed.private_verification_details,
        seed.category,
        seed.colour,
        seed.brand,
@@ -80,20 +82,21 @@ SELECT reporter.id,
        seed.item_report_status,
        seed.created_at
 FROM (VALUES
-    ('Black laptop', '15-inch laptop with a small sticker on the lid', 'ELECTRONICS', 'Black', 'Lenovo', 'UPT Library, first floor', TIMESTAMP '2026-10-14 10:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-14 12:00:00', 'ana.popescu@student.upt.ro'),
-    ('Blue student backpack', 'Contains two notebooks and a water bottle', 'BAGS', 'Blue', 'Eastpak', 'UVT Central Building, room 214', TIMESTAMP '2026-10-15 15:00:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-15 16:10:00', 'elena.stan@student.uvt.ro'),
-    ('Silver keys', 'Three keys on a red fabric keyring', 'PERSONAL belongings', 'Silver', NULL, 'UPT Faculty of Automation and Computers', TIMESTAMP '2026-10-16 08:45:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-16 09:15:00', 'mihai.ionescu@student.upt.ro'),
-    ('Wireless earbuds', 'White charging case with a scratch on the front', 'ELECTRONICS', 'White', 'Samsung', 'UVT cafeteria', TIMESTAMP '2026-10-16 13:20:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-16 14:00:00', 'vlad.dumitrescu@student.uvt.ro'),
-    ('Student ID card', 'Name partly visible; card belongs to a UPT student', 'DOCUMENTS', NULL, NULL, 'UPT main entrance', TIMESTAMP '2026-10-17 09:00:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-17 09:20:00', 'lostfound.admin@upt.ro'),
-    ('Green hoodie', 'Size M, white logo on the chest', 'CLOTHING', 'Green', 'Nike', 'UVT Sports Hall', TIMESTAMP '2026-10-17 18:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-17 19:00:00', 'vlad.dumitrescu@student.uvt.ro'),
-    ('Red water bottle', 'Metal bottle with a dent near the bottom', 'PERSONAL belongings', 'Red', 'Hydro Flask', 'UVT Library reading room', TIMESTAMP '2026-10-18 11:15:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-18 11:45:00', 'elena.stan@student.uvt.ro'),
-    ('Calculator', 'Scientific calculator with initials written on the back', 'STUDY MATERIALS', 'Black', 'Casio', 'UPT Faculty of Civil Engineering, room 105', TIMESTAMP '2026-10-18 14:40:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-18 15:10:00', 'ana.popescu@student.upt.ro'),
-    ('Keyring with three keys', 'Three silver keys on a red fabric keyring', 'PERSONAL belongings', 'Silver', NULL, 'UPT Faculty of Automation and Computers', TIMESTAMP '2026-10-15 08:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-15 10:00:00', 'ana.popescu@student.upt.ro'),
-    ('Wireless earbuds case', 'White Samsung earbuds case with a scratch on the front', 'ELECTRONICS', 'White', 'Samsung', 'UVT cafeteria', TIMESTAMP '2026-10-16 12:50:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-16 14:10:00', 'vlad.dumitrescu@student.uvt.ro'),
-    ('Metal water bottle', 'Red Hydro Flask bottle with a dent near the bottom', 'PERSONAL belongings', 'Red', 'Hydro Flask', 'UVT Library reading room', TIMESTAMP '2026-10-18 10:45:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-18 11:50:00', 'elena.stan@student.uvt.ro')
+    ('Black laptop', '15-inch laptop with a small sticker on the lid', NULL, 'ELECTRONICS', 'Black', 'Lenovo', 'UPT Library, first floor', TIMESTAMP '2026-10-14 10:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-14 12:00:00', 'ana.popescu@student.upt.ro'),
+    ('Blue student backpack', 'Contains two notebooks and a water bottle', NULL, 'BAGS', 'Blue', 'Eastpak', 'UVT Central Building, room 214', TIMESTAMP '2026-10-15 15:00:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-15 16:10:00', 'elena.stan@student.uvt.ro'),
+    ('Silver keys', 'Three keys on a metal ring', 'Red fabric keyring loop with a frayed end.', 'PERSONAL belongings', 'Silver', NULL, 'UPT Faculty of Automation and Computers', TIMESTAMP '2026-10-16 08:45:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-16 09:15:00', 'mihai.ionescu@student.upt.ro'),
+    ('Wireless earbuds', 'White wireless earbuds case', 'Small crescent-shaped scratch inside the lid.', 'ELECTRONICS', 'White', 'Samsung', 'UVT cafeteria', TIMESTAMP '2026-10-16 13:20:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-16 14:00:00', 'vlad.dumitrescu@student.uvt.ro'),
+    ('Student ID card', 'Student ID card found at the UPT main entrance', 'Admin must verify the claimant against the printed name and photo in person; do not request or store the full ID number.', 'DOCUMENTS', NULL, NULL, 'UPT main entrance', TIMESTAMP '2026-10-17 09:00:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-17 09:20:00', 'lostfound.admin@upt.ro'),
+    ('Green hoodie', 'Size M, white logo on the chest', NULL, 'CLOTHING', 'Green', 'Nike', 'UVT Sports Hall', TIMESTAMP '2026-10-17 18:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-17 19:00:00', 'vlad.dumitrescu@student.uvt.ro'),
+    ('Red water bottle', 'Red metal bottle found in the library', 'Small crescent-shaped dent on the underside near the edge.', 'PERSONAL belongings', 'Red', 'Hydro Flask', 'UVT Library reading room', TIMESTAMP '2026-10-18 11:15:00', 'FOUND', 'OPEN', TIMESTAMP '2026-10-18 11:45:00', 'elena.stan@student.uvt.ro'),
+    ('Calculator', 'Scientific calculator with initials written on the back', NULL, 'STUDY MATERIALS', 'Black', 'Casio', 'UPT Faculty of Civil Engineering, room 105', TIMESTAMP '2026-10-18 14:40:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-18 15:10:00', 'ana.popescu@student.upt.ro'),
+    ('Keyring with three keys', 'Three silver keys on a metal ring', NULL, 'PERSONAL belongings', 'Silver', NULL, 'UPT Faculty of Automation and Computers', TIMESTAMP '2026-10-15 08:30:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-15 10:00:00', 'ana.popescu@student.upt.ro'),
+    ('Wireless earbuds case', 'White Samsung wireless earbuds case', NULL, 'ELECTRONICS', 'White', 'Samsung', 'UVT cafeteria', TIMESTAMP '2026-10-16 12:50:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-16 14:10:00', 'vlad.dumitrescu@student.uvt.ro'),
+    ('Metal water bottle', 'Red Hydro Flask bottle', NULL, 'PERSONAL belongings', 'Red', 'Hydro Flask', 'UVT Library reading room', TIMESTAMP '2026-10-18 10:45:00', 'LOST', 'OPEN', TIMESTAMP '2026-10-18 11:50:00', 'elena.stan@student.uvt.ro')
 ) AS seed(
     item_name,
     item_details,
+    private_verification_details,
     category,
     colour,
     brand,
@@ -113,6 +116,66 @@ WHERE NOT EXISTS (
       AND existing.incident_at = seed.incident_at
       AND existing.item_report_type = seed.item_report_type
 );
+
+-- Backfill existing demo rows without overwriting any private details already entered.
+UPDATE item_report
+SET item_details = 'Three keys on a metal ring',
+    private_verification_details = 'Red fabric keyring loop with a frayed end.'
+WHERE item_name = 'Silver keys'
+  AND item_report_type = 'FOUND'
+  AND location = 'UPT Faculty of Automation and Computers'
+  AND incident_at = TIMESTAMP '2026-10-16 08:45:00'
+  AND private_verification_details IS NULL;
+
+UPDATE item_report
+SET item_details = 'White wireless earbuds case',
+    private_verification_details = 'Small crescent-shaped scratch inside the lid.'
+WHERE item_name = 'Wireless earbuds'
+  AND item_report_type = 'FOUND'
+  AND location = 'UVT cafeteria'
+  AND incident_at = TIMESTAMP '2026-10-16 13:20:00'
+  AND private_verification_details IS NULL;
+
+UPDATE item_report
+SET item_details = 'Student ID card found at the UPT main entrance',
+    private_verification_details = 'Admin must verify the claimant against the printed name and photo in person; do not request or store the full ID number.'
+WHERE item_name = 'Student ID card'
+  AND item_report_type = 'FOUND'
+  AND location = 'UPT main entrance'
+  AND incident_at = TIMESTAMP '2026-10-17 09:00:00'
+  AND private_verification_details IS NULL;
+
+UPDATE item_report
+SET item_details = 'Red metal bottle found in the library',
+    private_verification_details = 'Small crescent-shaped dent on the underside near the edge.'
+WHERE item_name = 'Red water bottle'
+  AND item_report_type = 'FOUND'
+  AND location = 'UVT Library reading room'
+  AND incident_at = TIMESTAMP '2026-10-18 11:15:00'
+  AND private_verification_details IS NULL;
+
+-- Remove clues from the public seeded lost-report descriptions that would reveal
+-- the verification details above. These predicates avoid overwriting later edits.
+UPDATE item_report SET item_details = 'Three silver keys on a metal ring'
+WHERE item_name = 'Keyring with three keys'
+  AND item_report_type = 'LOST'
+  AND location = 'UPT Faculty of Automation and Computers'
+  AND incident_at = TIMESTAMP '2026-10-15 08:30:00'
+  AND item_details = 'Three silver keys on a red fabric keyring';
+
+UPDATE item_report SET item_details = 'White Samsung wireless earbuds case'
+WHERE item_name = 'Wireless earbuds case'
+  AND item_report_type = 'LOST'
+  AND location = 'UVT cafeteria'
+  AND incident_at = TIMESTAMP '2026-10-16 12:50:00'
+  AND item_details = 'White Samsung earbuds case with a scratch on the front';
+
+UPDATE item_report SET item_details = 'Red Hydro Flask bottle'
+WHERE item_name = 'Metal water bottle'
+  AND item_report_type = 'LOST'
+  AND location = 'UVT Library reading room'
+  AND incident_at = TIMESTAMP '2026-10-18 10:45:00'
+  AND item_details = 'Red Hydro Flask bottle with a dent near the bottom';
 
 -- Suggested matches for three of the found reports. The ID card intentionally
 -- remains unmatched because there is no corresponding lost report in the seed.

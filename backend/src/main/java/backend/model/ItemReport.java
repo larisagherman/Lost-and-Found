@@ -21,6 +21,8 @@ public class ItemReport {
     private String itemName;
     @Column
     private String itemDetails;
+    @Column(name = "private_verification_details", length = 2000)
+    private String privateVerificationDetails;
     @Column
     private String category;
     @Column
