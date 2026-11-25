@@ -155,11 +155,11 @@ public class ClaimRequestService {
         claimRepository.save(claim);
         if (decision == ClaimStatus.APPROVED && lostReport != null) {
             // Reserve the claimant's lost report while the administrator arranges handover.
-            lostReport.setItemReportStatus(ItemReportStatus.RESOLVED);
+            lostReport.setItemReportStatus(ItemReportStatus.COMPLETED);
             itemReportRepository.save(lostReport);
         }
         notificationService.notifyStatusChanged(claim, decision == ClaimStatus.APPROVED
-                ? "Your claim was approved. Your linked lost report is resolved while an institution administrator coordinates the handover."
+                ? "Your claim was approved. Your linked lost report is completed while an institution administrator coordinates the handover."
                 : "Your claim was rejected." + reasonSuffix(claim.getAdminReason()));
         return toAdminResponse(claim);
     }
@@ -182,9 +182,9 @@ public class ClaimRequestService {
             lostReport = itemReportRepository.findByIdForUpdate(lostReport.getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Linked lost report not found."));
             if (lostReport.getItemReportType() != ItemReportType.LOST
-                    || lostReport.getItemReportStatus() != ItemReportStatus.RESOLVED) {
+                    || lostReport.getItemReportStatus() != ItemReportStatus.COMPLETED) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT,
-                        "The linked lost report must remain RESOLVED while the approved handover is completed.");
+                        "The linked lost report must remain COMPLETED while the approved handover is completed.");
             }
         }
 
@@ -194,7 +194,7 @@ public class ClaimRequestService {
         claim.setCompletedAt(completedAt);
         claim.setReviewedAt(completedAt);
         claimRepository.save(claim);
-        report.setItemReportStatus(ItemReportStatus.RESOLVED);
+        report.setItemReportStatus(ItemReportStatus.COMPLETED);
         itemReportRepository.save(report);
 
         List<ClaimRequest> remaining = claimRepository.findByFoundItemReport_IdAndStatus(
@@ -224,9 +224,9 @@ public class ClaimRequestService {
             lostReport = itemReportRepository.findByIdForUpdate(lostReport.getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Linked lost report not found."));
             if (lostReport.getItemReportType() != ItemReportType.LOST
-                    || lostReport.getItemReportStatus() != ItemReportStatus.RESOLVED) {
+                    || lostReport.getItemReportStatus() != ItemReportStatus.COMPLETED) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT,
-                        "The linked lost report must be RESOLVED before the approval can be cancelled.");
+                        "The linked lost report must be COMPLETED before the approval can be cancelled.");
             }
             lostReport.setItemReportStatus(ItemReportStatus.OPEN);
             itemReportRepository.save(lostReport);

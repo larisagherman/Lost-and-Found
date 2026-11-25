@@ -1,3 +1,16 @@
+-- Keep the database constraint aligned with OPEN and COMPLETED.
+-- Only old terminal statuses are renamed; OPEN reports remain OPEN.
+ALTER TABLE item_report
+    DROP CONSTRAINT IF EXISTS item_report_item_report_status_check;
+
+UPDATE item_report
+SET item_report_status = 'COMPLETED'
+WHERE item_report_status IN ('RESOLVED', 'CLOSED');
+
+ALTER TABLE item_report
+    ADD CONSTRAINT item_report_item_report_status_check
+    CHECK (item_report_status IN ('OPEN', 'COMPLETED'));
+
 -- Institutions
 INSERT INTO institution (name, code, is_active)
 VALUES

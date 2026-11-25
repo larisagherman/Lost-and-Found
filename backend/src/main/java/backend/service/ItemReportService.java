@@ -126,17 +126,17 @@ public class ItemReportService {
             Long reporterId,
             ItemReportStatus newStatus
     ) {
-        if (newStatus != ItemReportStatus.RESOLVED && newStatus != ItemReportStatus.CLOSED) {
+        if (newStatus != ItemReportStatus.COMPLETED) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "You can change an open report to RESOLVED or CLOSED."
+                    "You can change an open lost report to COMPLETED."
             );
         }
         ItemReport report = getOwnedOpenReport(itemReportId, reporterId);
-        if (newStatus == ItemReportStatus.RESOLVED && report.getItemReportType() == ItemReportType.FOUND) {
+        if (report.getItemReportType() == ItemReportType.FOUND) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "An administrator confirms a found-item handover and resolves the report."
+                    "An administrator confirms a found-item handover and completes the report."
             );
         }
         if (hasActiveClaims(itemReportId)) {
