@@ -10,6 +10,7 @@ import Login from './pages/Login'
 import VerifyLogin from './pages/VerifyLogin'
 import CreateItem from './pages/CreateItem'
 import MyListings from './pages/MyListings'
+import EditItem from './pages/EditItem'
 
 import { getCurrentUser } from './services/authService'
 
@@ -94,6 +95,24 @@ function App() {
               </main>
             ) : user ? (
               <CreateItem />
+            ) : (
+              <Navigate
+                to="/login"
+                state={{ from: location.pathname + location.search }}
+                replace
+              />
+            )
+          }
+        />
+        <Route
+          path="/items/:id/edit"
+          element={
+            authLoading ? (
+              <main className="create-item-page">
+                <p>Checking authentication...</p>
+              </main>
+            ) : user ? (
+              <EditItem setUser={setUser} />
             ) : (
               <Navigate
                 to="/login"

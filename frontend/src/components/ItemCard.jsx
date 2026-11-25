@@ -2,8 +2,15 @@
 import { Link } from 'react-router-dom'
 import './ItemCard.css'
 
-function ItemCard({ item }) {
+function ItemCard({
+  item,
+  showActions = false,
+  onClose,
+  isUpdating = false,
+  actionsDisabled = false
+}) {
   const isLost = item.itemReportType === 'LOST'
+  const isOpen = item.itemReportStatus === 'OPEN'
 
   const formattedDate = new Date(
     item.incidentAt
@@ -22,12 +29,18 @@ function ItemCard({ item }) {
         </div>
 
         <span
-          className={`item-badge ${
-            isLost ? 'badge-lost' : 'badge-found'
-          }`}
+          className={`item-badge ${isLost ? 'badge-lost' : 'badge-found'
+            }`}
         >
           {isLost ? 'LOST' : 'FOUND'}
         </span>
+        {showActions && (
+          <span
+            className={`item-status-badge status-${item.itemReportStatus.toLowerCase()}`}
+          >
+            {item.itemReportStatus}
+          </span>
+        )}
       </div>
 
       <div className="item-card-content">
@@ -56,6 +69,25 @@ function ItemCard({ item }) {
           View details
           <span aria-hidden="true">→</span>
         </Link>
+        {showActions && isOpen && (
+          <div className="item-card-actions">
+            <Link
+              to={`/items/${item.id}/edit`}
+              className="item-edit-button"
+            >
+              Edit Listing
+            </Link>
+
+            <button
+              type="button"
+              className="item-close-button"
+              onClick={() => onClose(item.id)}
+              disabled={actionsDisabled}
+            >
+              {isUpdating ? 'Closing Listing...' : 'Close Listing'}
+            </button>
+          </div>
+        )}
 
       </div>
     </article>

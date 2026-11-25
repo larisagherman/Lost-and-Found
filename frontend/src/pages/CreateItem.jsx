@@ -24,6 +24,7 @@ function CreateItem() {
     const [formData, setFormData] = useState({
         itemName: '',
         itemDetails: '',
+        privateVerificationDetails: '',
         category: '',
         colour: '',
         brand: '',
@@ -43,12 +44,24 @@ function CreateItem() {
     async function handleSubmit(event) {
         event.preventDefault()
 
+        if (
+            formData.itemReportType === 'FOUND' &&
+            !formData.privateVerificationDetails.trim()
+        ) {
+            setError('Please provide private verification details.')
+            return
+        }
+
         setLoading(true)
         setError('')
 
         try {
             const itemData = {
                 ...formData,
+                privateVerificationDetails:
+                    formData.itemReportType === 'FOUND'
+                        ? formData.privateVerificationDetails.trim()
+                        : null,
                 incidentAt: formData.incidentAt
                     ? `${formData.incidentAt}:00`
                     : null
@@ -56,7 +69,7 @@ function CreateItem() {
 
             await createItemReport(itemData)
 
-            navigate('/items')
+            navigate('/my-listings')
         } catch (error) {
             console.error('Failed to create item:', error)
 
@@ -115,7 +128,28 @@ function CreateItem() {
                     onChange={handleChange}
                     required
                 />
+                {formData.itemReportType === 'FOUND' && (
+                    <>
+                        <label htmlFor="privateVerificationDetails">
+                            Private Verification Details
+                        </label>
 
+                        <textarea
+                            id="privateVerificationDetails"
+                            name="privateVerificationDetails"
+                            placeholder="Describe details that only the rightful owner would know..."
+                            value={formData.privateVerificationDetails}
+                            onChange={handleChange}
+                            required
+                        />
+
+                        <small className="private-details-hint">
+                            Provide details that can help verify the rightful
+                            owner. Do not include these details in the
+                            public description.
+                        </small>
+                    </>
+                )}
                 <label htmlFor="category">Category</label>
                 <select
                     id="category"
