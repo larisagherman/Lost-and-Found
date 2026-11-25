@@ -13,6 +13,9 @@ public class AdminClaimResponse {
     private String publicItemDetails;
     private String privateVerificationDetails;
     private String itemLocation;
+    private Long lostItemReportId;
+    private String lostItemName;
+    private String lostItemDetails;
     private Long claimantId;
     private String claimantName;
     private String claimantEmail;

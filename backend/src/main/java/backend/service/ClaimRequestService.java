@@ -52,25 +52,49 @@ public class ClaimRequestService {
         if (claimant.getId().equals(report.getReporter().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot claim your own found report.");
         }
+        ItemReport lostReport = null;
+        if (request.getLostItemReportId() != null) {
+            lostReport = itemReportRepository.findByIdForUpdate(request.getLostItemReportId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lost report not found."));
+            if (lostReport.getItemReportType() != ItemReportType.LOST) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The linked report must be a LOST report.");
+            }
+            if (lostReport.getItemReportStatus() != ItemReportStatus.OPEN) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "The linked lost report must be OPEN.");
+            }
+            if (!lostReport.getReporter().getId().equals(claimantId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only link your own lost report.");
+            }
+            if (!lostReport.getReporter().getInstitution().getId()
+                    .equals(report.getReporter().getInstitution().getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "The found and lost reports must belong to the same institution.");
+            }
+        }
         if (report.getPrivateVerificationDetails() == null || report.getPrivateVerificationDetails().isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "This report is not ready for online claims. Contact an institution administrator."
             );
         }
-        if (claimRepository.existsByFoundItemReport_IdAndClaimant_Id(reportId, claimantId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "You have already submitted a claim for this report.");
+        List<ClaimStatus> activeClaimStatuses = List.of(ClaimStatus.PENDING, ClaimStatus.APPROVED);
+        if (claimRepository.existsByFoundItemReport_IdAndClaimant_IdAndStatusIn(
+                reportId, claimantId, activeClaimStatuses)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "You already have an active claim for this report.");
         }
 
         ClaimRequest claim = new ClaimRequest();
         claim.setFoundItemReport(report);
+        claim.setLostItemReport(lostReport);
         claim.setClaimant(claimant);
         claim.setProofDetails(request.getProofDetails().trim());
         claim.setStatus(ClaimStatus.PENDING);
         try {
             claim = claimRepository.saveAndFlush(claim);
         } catch (DataIntegrityViolationException exception) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "You have already submitted a claim for this report.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "You already have an active claim for this report.");
         }
         notificationService.notifySubmitted(claim);
         return toClaimResponse(claim);
@@ -109,6 +133,16 @@ public class ClaimRequestService {
         if (report.getItemReportStatus() != ItemReportStatus.OPEN) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The found report is no longer open.");
         }
+        ItemReport lostReport = claim.getLostItemReport();
+        if (lostReport != null) {
+            lostReport = itemReportRepository.findByIdForUpdate(lostReport.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Linked lost report not found."));
+            if (lostReport.getItemReportType() != ItemReportType.LOST
+                    || lostReport.getItemReportStatus() != ItemReportStatus.OPEN) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "The linked lost report must be OPEN before this claim can be decided.");
+            }
+        }
         if (decision == ClaimStatus.APPROVED
                 && claimRepository.existsByFoundItemReport_IdAndStatus(report.getId(), ClaimStatus.APPROVED)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Another claim is already approved for this item.");
@@ -119,8 +153,13 @@ public class ClaimRequestService {
         claim.setReviewedAt(LocalDateTime.now());
         claim.setAdminReason(normalizeReason(reason));
         claimRepository.save(claim);
+        if (decision == ClaimStatus.APPROVED && lostReport != null) {
+            // Reserve the claimant's lost report while the administrator arranges handover.
+            lostReport.setItemReportStatus(ItemReportStatus.RESOLVED);
+            itemReportRepository.save(lostReport);
+        }
         notificationService.notifyStatusChanged(claim, decision == ClaimStatus.APPROVED
-                ? "Your claim was approved. An institution administrator will coordinate the handover."
+                ? "Your claim was approved. Your linked lost report is resolved while an institution administrator coordinates the handover."
                 : "Your claim was rejected." + reasonSuffix(claim.getAdminReason()));
         return toAdminResponse(claim);
     }
@@ -137,6 +176,16 @@ public class ClaimRequestService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Found report not found."));
         if (report.getItemReportStatus() != ItemReportStatus.OPEN) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The found report is no longer open.");
+        }
+        ItemReport lostReport = claim.getLostItemReport();
+        if (lostReport != null) {
+            lostReport = itemReportRepository.findByIdForUpdate(lostReport.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Linked lost report not found."));
+            if (lostReport.getItemReportType() != ItemReportType.LOST
+                    || lostReport.getItemReportStatus() != ItemReportStatus.RESOLVED) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "The linked lost report must remain RESOLVED while the approved handover is completed.");
+            }
         }
 
         LocalDateTime completedAt = LocalDateTime.now();
@@ -170,13 +219,29 @@ public class ClaimRequestService {
         if (claim.getStatus() != ClaimStatus.APPROVED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Only an APPROVED claim can be cancelled.");
         }
+        ItemReport lostReport = claim.getLostItemReport();
+        if (lostReport != null) {
+            lostReport = itemReportRepository.findByIdForUpdate(lostReport.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Linked lost report not found."));
+            if (lostReport.getItemReportType() != ItemReportType.LOST
+                    || lostReport.getItemReportStatus() != ItemReportStatus.RESOLVED) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "The linked lost report must be RESOLVED before the approval can be cancelled.");
+            }
+            lostReport.setItemReportStatus(ItemReportStatus.OPEN);
+            itemReportRepository.save(lostReport);
+        }
         claim.setStatus(ClaimStatus.CANCELLED);
         claim.setReviewedByAdmin(admin);
         claim.setReviewedAt(LocalDateTime.now());
         claim.setAdminReason("The approved claimant did not complete pickup.");
         claimRepository.save(claim);
-        notificationService.notifyStatusChanged(claim, "The approved claim was cancelled. The report remains open for other claims."
-                + reasonSuffix(claim.getAdminReason()));
+        String cancellationMessage = "The approved claim was cancelled. The found report remains open.";
+        if (lostReport != null) {
+            cancellationMessage += " Your linked lost report has been reopened.";
+        }
+        notificationService.notifyStatusChanged(claim,
+                cancellationMessage + reasonSuffix(claim.getAdminReason()));
         return toAdminResponse(claim);
     }
 
@@ -222,6 +287,10 @@ public class ClaimRequestService {
         response.setFoundItemReportId(claim.getFoundItemReport().getId());
         response.setItemName(claim.getFoundItemReport().getItemName());
         response.setItemLocation(claim.getFoundItemReport().getLocation());
+        if (claim.getLostItemReport() != null) {
+            response.setLostItemReportId(claim.getLostItemReport().getId());
+            response.setLostItemName(claim.getLostItemReport().getItemName());
+        }
         response.setProofDetails(claim.getProofDetails());
         response.setStatus(claim.getStatus());
         response.setAdminReason(claim.getAdminReason());
@@ -240,6 +309,11 @@ public class ClaimRequestService {
         response.setPublicItemDetails(report.getItemDetails());
         response.setPrivateVerificationDetails(report.getPrivateVerificationDetails());
         response.setItemLocation(report.getLocation());
+        if (claim.getLostItemReport() != null) {
+            response.setLostItemReportId(claim.getLostItemReport().getId());
+            response.setLostItemName(claim.getLostItemReport().getItemName());
+            response.setLostItemDetails(claim.getLostItemReport().getItemDetails());
+        }
         response.setClaimantId(claim.getClaimant().getId());
         response.setClaimantName(claim.getClaimant().getDisplayName());
         response.setClaimantEmail(claim.getClaimant().getEmail());

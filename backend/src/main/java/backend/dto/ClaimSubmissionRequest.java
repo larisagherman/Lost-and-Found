@@ -6,6 +6,8 @@ import lombok.Data;
 
 @Data
 public class ClaimSubmissionRequest {
+    private Long lostItemReportId;
+
     @NotBlank
     @Size(max = 2000)
     private String proofDetails;

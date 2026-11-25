@@ -8,14 +8,10 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "claim_request", uniqueConstraints = {
-        @UniqueConstraint(
-                name = "uk_claim_report_claimant",
-                columnNames = {"found_item_report_id", "claimant_id"}
-        )
-}, indexes = {
+@Table(name = "claim_request", indexes = {
         @Index(name = "idx_claim_request_status", columnList = "status"),
-        @Index(name = "idx_claim_request_report", columnList = "found_item_report_id")
+        @Index(name = "idx_claim_request_report", columnList = "found_item_report_id"),
+        @Index(name = "idx_claim_request_lost_report", columnList = "lost_item_report_id")
 })
 @Getter
 @Setter
@@ -28,6 +24,10 @@ public class ClaimRequest {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "found_item_report_id", nullable = false)
     private ItemReport foundItemReport;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lost_item_report_id")
+    private ItemReport lostItemReport;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "claimant_id", nullable = false)

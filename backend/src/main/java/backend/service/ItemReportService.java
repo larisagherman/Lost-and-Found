@@ -6,6 +6,7 @@ import backend.mapper.ItemReportMapper;
 import backend.model.ItemReport;
 import backend.model.ItemReportStatus;
 import backend.model.ItemReportType;
+import backend.model.ClaimStatus;
 import backend.model.Users;
 import backend.repository.ItemReportRepository;
 import backend.repository.ClaimRequestRepository;
@@ -91,8 +92,7 @@ public class ItemReportService {
             ItemReportDtoRequest request
     ) {
         ItemReport report = getOwnedOpenReport(itemReportId, reporterId);
-        if (claimRequestRepository.existsByFoundItemReport_IdAndStatusIn(
-                itemReportId, List.of(backend.model.ClaimStatus.PENDING, backend.model.ClaimStatus.APPROVED))) {
+        if (hasActiveClaims(itemReportId)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "A report cannot be edited while a claim is awaiting review or handover."
@@ -100,7 +100,8 @@ public class ItemReportService {
         }
         validateReportTypeAndPrivateDetails(request);
         if (report.getItemReportType() != request.getItemReportType()
-                && claimRequestRepository.existsByFoundItemReport_Id(itemReportId)) {
+                && (claimRequestRepository.existsByFoundItemReport_Id(itemReportId)
+                || claimRequestRepository.existsByLostItemReport_Id(itemReportId))) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "A report with a submitted claim cannot change between LOST and FOUND."
@@ -138,8 +139,7 @@ public class ItemReportService {
                     "An administrator confirms a found-item handover and resolves the report."
             );
         }
-        if (claimRequestRepository.existsByFoundItemReport_IdAndStatusIn(
-                itemReportId, List.of(backend.model.ClaimStatus.PENDING, backend.model.ClaimStatus.APPROVED))) {
+        if (hasActiveClaims(itemReportId)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "A report cannot be closed while a claim is awaiting review or handover."
@@ -176,5 +176,11 @@ public class ItemReportService {
                     "FOUND reports require private verification details for claim review."
             );
         }
+    }
+
+    private boolean hasActiveClaims(Long reportId) {
+        List<ClaimStatus> activeStatuses = List.of(ClaimStatus.PENDING, ClaimStatus.APPROVED);
+        return claimRequestRepository.existsByFoundItemReport_IdAndStatusIn(reportId, activeStatuses)
+                || claimRequestRepository.existsByLostItemReport_IdAndStatusIn(reportId, activeStatuses);
     }
 }

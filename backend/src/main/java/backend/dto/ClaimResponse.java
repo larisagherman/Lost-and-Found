@@ -11,6 +11,8 @@ public class ClaimResponse {
     private Long foundItemReportId;
     private String itemName;
     private String itemLocation;
+    private Long lostItemReportId;
+    private String lostItemName;
     private String proofDetails;
     private ClaimStatus status;
     private String adminReason;
