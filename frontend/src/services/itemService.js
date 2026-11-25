@@ -1,7 +1,7 @@
 
-const API_BASE_URL = 'http://localhost:8081'
+export const API_BASE_URL = 'http://localhost:8081'
 
-async function getCsrfHeaders() {
+export async function getCsrfHeaders() {
     const response = await fetch(`${API_BASE_URL}/auth/csrf`, {
         method: 'GET',
         credentials: 'include'
